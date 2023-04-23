@@ -9,11 +9,12 @@
 # Import the class(es) created + logging
 from library.works import Works
 from library.customer import Customer
+from library.employee import Employee
 import logging
 #to initiate for logging
 logging.basicConfig(level=logging.DEBUG, format=' %(asctime)s - %(levelname)s - %(message)s')
 #to disable logging messages
-# logging.disable(logging.ERROR)
+logging.disable(logging.ERROR)
 
 #to create all the lists that will be used later
 choicesForPurpose = ["books", "video games", "back", "1", "2", "3"]
@@ -25,6 +26,7 @@ shoppingCart = {}
 userChoice = ""
 
 loginStatus = False
+isEmployee = False
 
 #Welcome message
 print("Welcome to the newly opened book store, Tundra!")
@@ -35,18 +37,27 @@ while (userChoice != "leave") and (userChoice != "3"):
     # to reset this variable to re-enter the while loop
     userPurpose = ""
     # to check whether or not the user is logged in/signed up
-    if (loginStatus == True):
-        option = " View Cart"
+    if (loginStatus == True and isEmployee == False):
+        option = "(1) Browse Catalogue"
+        option1 = "\n(2) View Cart"
         option2 = "\n(3) Sell Work"
         optional = "\n(4) Log Out"
         welcomeMessage = "\nWelcome " + Customer.getName(existCustomer) + "! "
-    else:
-        option = " Log In"
+    elif (loginStatus == False):
+        option = "(1) Browse Catalogue"
+        option1 = "\n(2) Log In"
         option2 = "\n(3) Leave"
-        optional = ""
+        optional = "\n(4) Apply For Job"
         welcomeMessage = ""
 
-    print(welcomeMessage + "What would you like to do today?\n(1) Browse Catalogue\n(2)" + option + option2 + optional)
+    elif (loginStatus == True and isEmployee == True):
+        option = "(1) Tidy Up"
+        option1 = "\n(2) Patrol"
+        option2 = "\n(3) Collect Pay"
+        option3 = "\n(4) Leave"
+        welcomeMessage = "\nWelcome " + Employee.getName(existEmployee) + "! "
+
+    print(welcomeMessage + "What would you like to do today?\n" + option + option1 + option2 + optional)
     #records the user's choice
     userChoice = input().strip().lower()
     # to see what the user typed in, may be the cause of potential errors
@@ -116,25 +127,35 @@ while (userChoice != "leave") and (userChoice != "3"):
     
     #if the user chooses to login
     elif (loginStatus == False and (userChoice == "log in" or userChoice == "2")):
-        needSignUp = input("Do you already have an account (y/n)? ")
-        if needSignUp == "n" or needSignUp == "y":
-            # registering the user
-            newUserEmail = input("Email: ")
-            newUsername = input("Username: ")
-            newUserPassword = input("Password: ")
-            # generates the customer data
-            existCustomer = Customer(newUserEmail, newUsername, newUserPassword)
-            if needSignUp == "n":
-                # stores the customer data
-                Customer.addCustomer(existCustomer)
-                loginStatus = True
-            else:
-                existence = Customer.checkExistence(existCustomer)
-                if existence == True:
-                    # change their login status to true
+        logIn = input("Are you: \n(1) Employee\n(2) Customer").lower()
+
+        if logIn == "employee" or logIn == "1":
+            if isEmployee == True:
+                # empEmail = input("Email: ")
+                # empFname = input("Firstname: ")
+                # empLname = input("Lastname: ")
+                empId = input("EmployeeID: ")
+                employeeExistence = Employee.checkExistence(empId)
+        elif logIn == "customer" or logIn == "2":
+            needSignUp = input("Do you already have an account (y/n)? ")
+            if needSignUp == "n" or needSignUp == "y":
+                # registering the user
+                newUserEmail = input("Email: ")
+                newUsername = input("Username: ")
+                newUserPassword = input("Password: ")
+                # generates the customer data
+                existCustomer = Customer(newUserEmail, newUsername, newUserPassword)
+                if needSignUp == "n":
+                    # stores the customer data
+                    Customer.addCustomer(existCustomer)
                     loginStatus = True
                 else:
-                    print("Account does not exist.")
+                    existence = Customer.checkExistence(existCustomer)
+                    if existence == True:
+                        # change their login status to true
+                        loginStatus = True
+                    else:
+                        print("Account does not exist.")
 
     # if the user chooses to view their cart
     elif (loginStatus == True and (userChoice == "view" or userChoice == "view cart" or userChoice == "2")):
@@ -207,6 +228,22 @@ while (userChoice != "leave") and (userChoice != "3"):
         # to exit the loop
         loginStatus = False
         userChoice = "leave"
+
+    elif (loginStatus == False and (userChoice == "leave" or userChoice == "3")):
+        # pop up screen for applying to be an employee
+        choice = input("Would you like to apply to Tundra (y/n)? ")
+        if choice == 'y':
+            fName = input("First name: ")
+            lName = input("Last name: ")
+            email = input("Email: ")
+            pwd = input("Password: ")
+
+            existEmployee = Employee(email, fName, lName, pwd)
+            employeeId = existEmployee.getStaffId()
+            isEmployee = True
+            loginStatus = True #might create new screen for employees
+
+            print("Welcome " + fName + "!\nYour employee ID is: " + employeeId)
 
     #if the user did not choose a valid option
     else:
