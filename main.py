@@ -127,7 +127,7 @@ while (userChoice != "leave") and (userChoice != "3"):
             #if the user chose none of the options provided
             elif userPurpose not in choicesForPurpose:
                 #repeat until they choose one of the options
-                print("Please enter a valid option.")
+                print("\nPlease enter a valid option.\n")
     
     #if the user chooses to login
     elif (loginStatus == False and (userChoice == "log in" or userChoice == "2")):
@@ -211,10 +211,10 @@ while (userChoice != "leave") and (userChoice != "3"):
     # if the user chooses to sell their work
     elif (loginStatus == True and (userChoice == "sell" or userChoice == "sell work" or userChoice == "3") and (isEmployee == False)):
         # prompts the user to type in the genre of the work
-        genreOfWork = input("What genre is the work you are selling? We are only accepting the following genres: \n- Adventure\n- Fantasy\n- Romance\n- Thriller\n").strip().lower()
+        genreOfWork = input("What genre is the work you are selling? We are only accepting the following genres: \n(1) Adventure\n(2) Fantasy\n(3) Romance\n(4) Thriller\n").strip().lower()
         typeOfWork = input("What type of work is this? \n(1) Books\n(2) Video Games\n").strip().lower()
         # checking if the user's responses are reasonable
-        if (genreOfWork in genreAccept and (typeOfWork == "books" or typeOfWork == "video games" or typeOfWork == "1" or typeOfWork == "2")):
+        if ((genreOfWork in genreAccept or genreOfWork in numbersAccept) and (typeOfWork == "books" or typeOfWork == "video games" or typeOfWork == "1" or typeOfWork == "2")):
             titleOfWork = input("Title: ")
             authorOfWork = input("Author: ")
             synopsisOfWork = input("Quick Summary: ")
@@ -225,6 +225,9 @@ while (userChoice != "leave") and (userChoice != "3"):
                 workType = "videoGames"
             else:
                 workType = "books"
+
+            if genreOfWork in numbersAccept:
+                genreOfWork = genreAccept[int(genreOfWork)-1]
             # "traps" the user until they enter an appropriate price
             while (priceOfWork > 100.00 or priceOfWork < 0.00):
                 try:
@@ -266,8 +269,6 @@ while (userChoice != "leave") and (userChoice != "3"):
 
     # if the user wants to apply to become a part of Tundra's staff
     elif (loginStatus == False and (userChoice == "apply" or userChoice == "apply for job" or userChoice == "4")):
-        # may need to disclose more information; pay, job responsibilities
-        
         # pop up screen for applying to be an employee
         # records information on the applicant
         fName = input("First name: ")
@@ -284,35 +285,37 @@ while (userChoice != "leave") and (userChoice != "3"):
 
             #checking for no duplicate applicants
             alreadyApplied = existEmployee.checkExistence()
+
+            # if have not applied before
             if alreadyApplied == False:
-                employeeId = existEmployee.getStaffId()
+                employeeId = existEmployee.getStaffId() # stores the generated employee id
+
+                #changing user status
                 isEmployee = True
                 loginStatus = True 
 
                 # add employee to database
                 Employee.addEmployee(existEmployee)
-                # assign them their job
+                # assign them their job - cashier
                 currentJob = Jobs("cashier", employeeId, 0, 0.00)
                 currentJob.addJob()
 
-                print("\nWelcome " + fName + "!\nYour employee ID is: \033[1m" + employeeId + "\033[0m")
+                print("\nWelcome " + fName + "!\nRemember your employee ID!\n\nYour employee ID is: \033[1m" + employeeId + "\033[0m")
             
             else:
-                print("You have already applied.") # Please contact support for further information.
+                print("\nYou have already applied.\n")
 
     elif (isEmployee == True and (userChoice == "work" or userChoice == "1")):
         # should pop up an option to work
 
         workInput = input("Your shift is 8 hours long. \nBegin working by pressing 'Enter'")
         pay = currentJob.beginWorking() # run the working minigame (math) and return total pay for the work session
-        # totalPay += pay #add to their total pay
 
     elif (isEmployee == True and (userChoice == "collect pay" or userChoice == "collect" or userChoice =="2")):
         # should pop up a screen showing the amount in account, and whether or not to collect it
         moneyChoice = input("You currently have $" + str(currentJob.findMoney()) + " in your account.\nWould you like to take it out now (y/n)? ")
         if moneyChoice == "y":
             # after collecting their pay; resets back to $0
-            # totalPay = 0
             currentJob.clearZero()
 
     elif (isEmployee == True and (userChoice == "promotion" or userChoice == "3")):
@@ -320,15 +323,10 @@ while (userChoice != "leave") and (userChoice != "3"):
         jobNow = currentJob.promote()
 
         print("\nYour current job is: " + str(jobNow[0]) + "\nYour current pay is: $" + str(jobNow[1]) + "/hr")
-        userChoice = "stay" #keep the user in while loop
-
-    #if requires support
-    # elif (userChoice == "account recovery" or userChoice == "5" or userChoice == "account"):
-    #     #include account recovery; hints to their email address used if all other information (excluding pwd) is correct; hints to pwd if everything else is right; answer security question?
-    #     userIssue = input("What would you like assistance with?\n(1) Email Recovery\n(2) Password Recovery")
+        userChoice = "stay" #keeps the user in while loop
 
     #if the user did not choose a valid option
     else:
-        print("Please input a valid option.")
+        print("\nPlease input a valid option.\n")
 
 print("\nPlease come again!")
