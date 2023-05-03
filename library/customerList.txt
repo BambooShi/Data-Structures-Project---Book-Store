@@ -1,5 +1,2 @@
 ['johndoe@gmail.com', 'JohnDoe01', 'helloIamJohnDoe']
 ['snows@gmail.com', 'Snows01', 'snowsaccount']
-['newuser@gmail.com', 'newUser', 'imnew']
-['newUser123@gmail.com', 'newUser01', 'helloImnew']
-['newUser123@gmail.com', 'user123', 'abcdefg']

@@ -1,15 +1,16 @@
-#-----------------------------------------------------------------------------
+#------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 # Name:        Data Structures (main.py)
-# Purpose:     To make a functioning book store that just opened.
+# Purpose:     A book store allowing users to sign up, log in, browse items, purchase items, sell items, even working under Tundra! Allowing employees to work (do math), collect pay, and even able to move up in ranks! Everything is remembered, even after rerunning the program!
 #
 # Author:      Snow S.
-# Created:     02-Mar-2023
-# Updated:     10-Mar-2023
-#-----------------------------------------------------------------------------
-# Import the class(es) created + logging
+# Created:     21-Apr-2023
+# Updated:     03-May-2023
+#------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+# Import the classes created + logging
 from library.works import Works
 from library.customer import Customer
 from library.employee import Employee
+from library.jobs import Jobs
 import logging
 #to initiate for logging
 logging.basicConfig(level=logging.DEBUG, format=' %(asctime)s - %(levelname)s - %(message)s')
@@ -24,9 +25,11 @@ shoppingCart = {}
 
 #to initialize the variables to enter the loops
 userChoice = ""
+# totalPay = Jobs.grabAccountM()
 
 loginStatus = False
 isEmployee = False
+uniqueStaffId = False
 
 #Welcome message
 print("Welcome to the newly opened book store, Tundra!")
@@ -36,35 +39,36 @@ while (userChoice != "leave") and (userChoice != "3"):
     logging.info("The user is currently logged in: " + str(loginStatus))
     # to reset this variable to re-enter the while loop
     userPurpose = ""
-    # to check whether or not the user is logged in/signed up
+    # to check whether or not the user is logged in/signed up as a customer
     if (loginStatus == True and isEmployee == False):
         option = "(1) Browse Catalogue"
         option1 = "\n(2) View Cart"
         option2 = "\n(3) Sell Work"
         optional = "\n(4) Log Out"
         welcomeMessage = "\nWelcome " + Customer.getName(existCustomer) + "! "
+    # if the user is not logged in
     elif (loginStatus == False):
         option = "(1) Browse Catalogue"
         option1 = "\n(2) Log In"
         option2 = "\n(3) Leave"
         optional = "\n(4) Apply For Job"
         welcomeMessage = ""
-
+    # if the user is logged in as an employee
     elif (loginStatus == True and isEmployee == True):
-        option = "(1) Tidy Up"
-        option1 = "\n(2) Patrol"
-        option2 = "\n(3) Collect Pay"
-        option3 = "\n(4) Leave"
+        option = "(1) Work"
+        option1 = "\n(2) Collect Pay"
+        option2 = "\n(3) Promotion"
+        optional = "\n(4) Log Out"
         welcomeMessage = "\nWelcome " + Employee.getName(existEmployee) + "! "
 
-    print(welcomeMessage + "What would you like to do today?\n" + option + option1 + option2 + optional)
+    print(welcomeMessage + "What would you like to do today?\n" + option + option1 + option2 + optional) # + "\n(5) Account Recovery"
     #records the user's choice
     userChoice = input().strip().lower()
     # to see what the user typed in, may be the cause of potential errors
     logging.info("The user typed in " + userChoice + " when asked what they would like to do.")
 
     #if the user chooses to browse or chose <back> in the next option
-    if (userChoice == "browse" or userChoice == "browse catalogue" or userChoice == "1"):
+    if (userChoice == "browse" or userChoice == "browse catalogue" or userChoice == "1") and (isEmployee == False):
         # ensures that the user must enter appropriate responses to progress
         while (userPurpose not in choicesForPurpose):
             print("What would you like to browse for?\n(1) Books\n(2) Video Games \n(3) Back")
@@ -115,7 +119,7 @@ while (userChoice != "leave") and (userChoice != "3"):
                                 print(str(userOption) + " was not added to cart.")
                     
                         else:
-                            print("\nSign up to purchase the books/games.\n")
+                            print("\nSign up to purchase books/games from Tundra.\n")
 
                 else:
                     print("\nPlease choose from the options provided.\n")
@@ -127,17 +131,38 @@ while (userChoice != "leave") and (userChoice != "3"):
     
     #if the user chooses to login
     elif (loginStatus == False and (userChoice == "log in" or userChoice == "2")):
-        logIn = input("Are you: \n(1) Employee\n(2) Customer").lower()
+        logIn = input("Are you: \n(1) Employee\n(2) Customer\n").lower()
 
+        #if user chose the employee option
         if logIn == "employee" or logIn == "1":
-            if isEmployee == True:
-                # empEmail = input("Email: ")
-                # empFname = input("Firstname: ")
-                # empLname = input("Lastname: ")
-                empId = input("EmployeeID: ")
-                employeeExistence = Employee.checkExistence(empId)
+            #collecting the information
+            fName = input("First name: ")
+            lName = input("Last name: ")
+            email = input("Email: ")
+            pwd = input("Password: ")
+            empId = input("EmployeeID: ")
+
+            existEmployee = Employee(email, fName, lName, pwd, empId)
+            
+            #checking if employeeId is in database
+            employeeExistence = existEmployee.checkExistence()
+            #if employeeId is in database
+            if employeeExistence == True:
+                loginStatus = True
+                isEmployee = True
+
+                # finding the job and experience they have
+                job = Jobs.findJob(empId)
+                jobTitle = job[1]
+                exp = job[2]
+                amount = job[3]
+                # creating the currentJob object under the Jobs class
+                currentJob = Jobs(jobTitle, empId, exp, amount)
+            else:
+                print("Sorry, the staff ID provided is not found.")
         elif logIn == "customer" or logIn == "2":
             needSignUp = input("Do you already have an account (y/n)? ")
+            #if user types in one of the provided options
             if needSignUp == "n" or needSignUp == "y":
                 # registering the user
                 newUserEmail = input("Email: ")
@@ -158,7 +183,7 @@ while (userChoice != "leave") and (userChoice != "3"):
                         print("Account does not exist.")
 
     # if the user chooses to view their cart
-    elif (loginStatus == True and (userChoice == "view" or userChoice == "view cart" or userChoice == "2")):
+    elif (loginStatus == True and (userChoice == "view" or userChoice == "view cart" or userChoice == "2") and (isEmployee == False)):
         # prints the 'receipt' including the name of the books/video games and the price, also the total cost of everything combined
         print("\nYour Shopping Cart:\n")
         # to reset the total price each time
@@ -178,7 +203,7 @@ while (userChoice != "leave") and (userChoice != "3"):
             userChoice = "leave"
 
     # if the user chooses to sell their work
-    elif (loginStatus == True and (userChoice == "sell" or userChoice == "sell work" or userChoice == "3")):
+    elif (loginStatus == True and (userChoice == "sell" or userChoice == "sell work" or userChoice == "3") and (isEmployee == False)):
         # prompts the user to type in the genre of the work
         genreOfWork = input("What genre is the work you are selling? We are only accepting the following genres: \n- Adventure\n- Fantasy\n- Romance\n- Thriller\n").strip().lower()
         typeOfWork = input("What type of work is this? \n(1) Books\n(2) Video Games\n").strip().lower()
@@ -224,26 +249,77 @@ while (userChoice != "leave") and (userChoice != "3"):
         else:
             print("Sorry, unfortunately, Tundra is unable to accept your product.")
 
-    elif  (loginStatus == True and (userChoice == "log out" or userChoice == "4")) or (loginStatus == False and (userChoice == "leave" or userChoice == "3")):
+    # if the user is prepared to leave the store
+    elif (loginStatus == False and (userChoice == "leave" or userChoice == "3")):
         # to exit the loop
-        loginStatus = False
         userChoice = "leave"
 
-    elif (loginStatus == False and (userChoice == "leave" or userChoice == "3")):
+    #if the user wants to log out
+    elif (loginStatus == True and (userChoice == "log out" or userChoice == "4")):
+        loginStatus = False
+
+    # if the user wants to apply to become a part of Tundra's staff
+    elif (loginStatus == False and (userChoice == "apply" or userChoice == "apply for job" or userChoice == "4")):
+        # may need to disclose more information; pay, job responsibilities
+        
         # pop up screen for applying to be an employee
-        choice = input("Would you like to apply to Tundra (y/n)? ")
-        if choice == 'y':
-            fName = input("First name: ")
-            lName = input("Last name: ")
-            email = input("Email: ")
-            pwd = input("Password: ")
+        # records information on the applicant
+        fName = input("First name: ")
+        lName = input("Last name: ")
+        email = input("Email: ")
+        pwd = input("Password: ")
 
-            existEmployee = Employee(email, fName, lName, pwd)
-            employeeId = existEmployee.getStaffId()
-            isEmployee = True
-            loginStatus = True #might create new screen for employees
+        if fName == "" or lName == "" or email == "" or pwd == "" or "@" not in email:
+            print("\nInvalid information.\n")
 
-            print("Welcome " + fName + "!\nYour employee ID is: " + employeeId)
+        else:
+            #place all the information gathered into the Employee class to generate an object
+            existEmployee = Employee(email, fName, lName, pwd, "noSTAFFid")
+
+            #checking for no duplicate applicants
+            alreadyApplied = existEmployee.checkExistence()
+            if alreadyApplied == False:
+                employeeId = existEmployee.getStaffId()
+                isEmployee = True
+                loginStatus = True 
+
+                # add employee to database
+                Employee.addEmployee(existEmployee)
+                # assign them their job
+                currentJob = Jobs("cashier", employeeId, 0, 0.00)
+                currentJob.addJob()
+
+                print("\nWelcome " + fName + "!\nYour employee ID is: \033[1m" + employeeId + "\033[0m")
+            
+            else:
+                print("You have already applied.") # Please contact support for further information.
+
+    elif (isEmployee == True and (userChoice == "work" or userChoice == "1")):
+        # should pop up an option to work
+
+        workInput = input("Your shift is 8 hours long. \nBegin working by pressing 'Enter'")
+        pay = currentJob.beginWorking() # run the working minigame (math) and return total pay for the work session
+        # totalPay += pay #add to their total pay
+
+    elif (isEmployee == True and (userChoice == "collect pay" or userChoice == "collect" or userChoice =="2")):
+        # should pop up a screen showing the amount in account, and whether or not to collect it
+        moneyChoice = input("You currently have $" + str(currentJob.findMoney()) + " in your account.\nWould you like to take it out now (y/n)? ")
+        if moneyChoice == "y":
+            # after collecting their pay; resets back to $0
+            # totalPay = 0
+            currentJob.clearZero()
+
+    elif (isEmployee == True and (userChoice == "promotion" or userChoice == "3")):
+        # calling the promote function; checks if the employee can promote or not
+        jobNow = currentJob.promote()
+
+        print("\nYour current job is: " + str(jobNow[0]) + "\nYour current pay is: $" + str(jobNow[1]) + "/hr")
+        userChoice = "stay" #keep the user in while loop
+
+    #if requires support
+    # elif (userChoice == "account recovery" or userChoice == "5" or userChoice == "account"):
+    #     #include account recovery; hints to their email address used if all other information (excluding pwd) is correct; hints to pwd if everything else is right; answer security question?
+    #     userIssue = input("What would you like assistance with?\n(1) Email Recovery\n(2) Password Recovery")
 
     #if the user did not choose a valid option
     else:
