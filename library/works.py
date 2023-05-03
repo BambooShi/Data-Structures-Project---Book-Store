@@ -22,6 +22,9 @@ class Works():
   synopsis: string
     A short overview of the work
 
+  work: string
+    Indication of what type of work this is; book or video games
+
   Methods
   -------
   addWork() -> string

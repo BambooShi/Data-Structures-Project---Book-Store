@@ -1,0 +1,6 @@
+['johndoe123@gmail.com', 'John', 'Doe', 'helloIamJohnDoeWorker', '1234JD']
+['johndoe123@gmail.com', 'John', 'Doe']
+['snowshe123@gmail.com', 'Snow', 'She', 'snowsaccountstaff', '2345SS']
+['snowshe123@gmail.com', 'Snow', 'She']
+['helenishere@gmail.com', 'Helen', 'Hipop', 'helensaccountstaff', '7612HH']
+['helenishere@gmail.com', 'Helen', 'Hipop']

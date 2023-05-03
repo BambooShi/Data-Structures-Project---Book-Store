@@ -1,4 +1,6 @@
-class Customer():
+from library.person import User
+
+class Customer(User):
     '''
     A class that holds the customer objects
 
@@ -38,9 +40,7 @@ class Customer():
         password: string
             The stored password of the customer
         ''' 
-        self.email = email
-        self.name = name
-        self.password = password
+        super().__init__(email, name, password)
     
     def addCustomer(self):
         '''
@@ -64,26 +64,18 @@ class Customer():
         -------
         The username of the customer
         '''
-        return self.name
+        return super().getName()
     
     def checkExistence(self) -> str:
         '''
-        Checks if the user is logged in or not
+        Checks if the user exists or not
 
         Returns
         -------
         existence: boolean
             Returns true or false
         '''
-        existence = False
-        with open('library/customerList.txt', 'r+') as readArray:
-            content = readArray.readlines()
-            customerInfo = [self.email, self.name, self.password]
-            for i in range(0, len(content)):
-                # check if customer info matches the current line exactly
-                if (str(customerInfo)+ "\n") == content[i]:
-                    existence = True
-                    return existence
+        customerInfo = self.email #unique to each customer
+        file = 'library/customerList.txt'
 
-        return existence
-
+        return super().checkExistence(customerInfo, file)
