@@ -25,10 +25,20 @@ class Jobs(Employee):
     -------
     promote() -> list
         Returns the new job as a list
+    beginWorking()
+        A working minigame, will increase and update the experience and pay employee receives each session appropriately
     findJob() -> list
-        Returns the current job title as well as the employeeId and the job experience
-    beginWorking() -> int
-        Return how much the employee receives for this work session
+        Returns the current job title as well as the employeeId, job experience, and pay waiting to be collected
+    findPay() -> list
+        Returns the current job title and the hourly pay of the job
+    addJob()
+        Adds the employee job information into database
+    modifyExpAndMoney()
+        Modifies and updates the new information into database
+    clearZero()
+        Resets the amount awaiting to be collected in employee account
+    findMoney() -> float
+        Returns the amount of money in account
     '''
 
     def __init__(self, workTitle, staffId, experience, money):
@@ -58,6 +68,11 @@ class Jobs(Employee):
     def promote(self) -> list:
         '''
         To change the job title for a different pay and working hours
+
+        Return
+        ------
+        newJob: list[]
+            contains the name of the job and the pay of the job
         '''
         #default - cashier
         jobNum = 0
@@ -160,10 +175,18 @@ class Jobs(Employee):
 
         Jobs.modifyExpAndMoney(self)
 
+        return
+
     def findJob(staffId):
         '''
-        To find the job title
+        To find information such as the title of their job, number of experience, and amount of money in account, based on the staffId provided
+
+        Return
+        ------
+        information: list[]
+            A list containing the staffId, job title, number of experience, and pay remaining to be collected
         '''
+        # opens the text file and returns the information as an array
         with open('library/workExperience.txt', 'r+') as readArray:
             content = readArray.readlines()
             for i in range(0, len(content)):
@@ -176,7 +199,12 @@ class Jobs(Employee):
     
     def findPay(self):
         '''
-        To find the job pay
+        To find the job pay along with the job title
+
+        Return
+        ------
+        newJob: list[]
+            A list containing the job title and the pay per hour
         '''
         #default - cashier
         jobNum = 0
@@ -207,7 +235,7 @@ class Jobs(Employee):
 
     def modifyExpAndMoney(self):
         '''
-        To modify the data stored in text file
+        To modify and update the data stored in text file
         '''
         # modify the data stored in text file
         with open('library/workExperience.txt', 'r') as readArray:
@@ -230,6 +258,10 @@ class Jobs(Employee):
     
     def findMoney(self):
         '''
-        To grab amount of money in account
+        To grab amount of money left in account
+
+        Return
+        ------
+        The amount of money left in account
         '''
         return self.money

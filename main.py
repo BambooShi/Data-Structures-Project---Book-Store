@@ -168,19 +168,25 @@ while (userChoice != "leave") and (userChoice != "3"):
                 newUserEmail = input("Email: ")
                 newUsername = input("Username: ")
                 newUserPassword = input("Password: ")
-                # generates the customer data
-                existCustomer = Customer(newUserEmail, newUsername, newUserPassword)
-                if needSignUp == "n":
-                    # stores the customer data
-                    Customer.addCustomer(existCustomer)
-                    loginStatus = True
-                else:
-                    existence = Customer.checkExistence(existCustomer)
-                    if existence == True:
-                        # change their login status to true
+
+                if newUserEmail != "" or newUsername != "" or newUserPassword != "" or "@" not in newUserEmail:
+                    # generates the customer data
+                    existCustomer = Customer(newUserEmail, newUsername, newUserPassword)
+                    if needSignUp == "n":
+                        # stores the customer data
+                        Customer.addCustomer(existCustomer)
                         loginStatus = True
                     else:
-                        print("Account does not exist.")
+                        existence = Customer.checkExistence(existCustomer)
+                        if existence == True:
+                            # change their login status to true
+                            loginStatus = True
+                        else:
+                            print("\nAccount does not exist.\n")
+                
+                # if the user inputs invalid information
+                else:
+                    print("\nInvalid information.\n")
 
     # if the user chooses to view their cart
     elif (loginStatus == True and (userChoice == "view" or userChoice == "view cart" or userChoice == "2") and (isEmployee == False)):

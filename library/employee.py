@@ -1,15 +1,15 @@
 import random
-from library.customer import Customer
+from library.person import User
 # from customer import Customer
 
-class Employee(Customer):
+class Employee(User):
     '''
     A class that holds the employee objects
 
     Attibutes
     ---------
     email: string
-            The email of the customer
+            The email of the employee
 
     name: string
         The first name of the employee
@@ -95,24 +95,17 @@ class Employee(Customer):
     
     def checkExistence(self) -> str:
         '''
-        Checks if the user is logged in or not
+        Checks if the user exists or not
 
         Returns
         -------
         existence: boolean
             Returns true or false
         '''
-        existence = False
-        with open('library/employeeList.txt', 'r+') as readArray:
-            content = readArray.readlines()
-            employeeInfo = [self.email, self.name, self.lName]
-            for i in range(0, len(content)):
-                # check if employee info is in database
-                if (str(employeeInfo)) in content[i]:
-                    existence = True
-                    return existence
+        employeeInfo = [self.email, self.name, self.lName]
+        file = 'library/employeeList.txt'
 
-        return existence
+        return super().checkExistence(employeeInfo, file)
     
     def generateStaffId(self) -> str:
         '''
