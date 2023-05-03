@@ -1,4 +1,4 @@
-# Data-Structures-Project---Book-Store
+# Extended-Data-Structures-Project---Book-Store
 An improved version of the book store previously released. 
 
 Not only can you be a customer in the newly opened bookstore 'Tundra', you can also choose to work here!
