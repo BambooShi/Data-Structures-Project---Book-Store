@@ -1,332 +1,261 @@
 #------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-# Name:        Data Structures (main.py)
-# Purpose:     A book store allowing users to sign up, log in, browse items, purchase items, sell items, even working under Tundra! Allowing employees to work (do math), collect pay, and even able to move up in ranks! Everything is remembered, even after rerunning the program!
+# Name:        Algorithms
+# Purpose:     To help the user find an employee using insertion sort, linear search, and binary search. 
+#              Will tell the user the position the employee is ordered at after being organized and sorted.
 #
 # Author:      Snow S.
-# Created:     21-Apr-2023
-# Updated:     03-May-2023
+# Created:     11-May-2023
+# Updated:     18-May-2023
 #------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-# Import the classes created + logging
-from library.works import Works
-from library.customer import Customer
-from library.employee import Employee
-from library.jobs import Jobs
+# Import the class created + logging, ast, time, names
+import ast
+from employee import Employee
 import logging
+import names
+import time
+
 #to initiate for logging
 logging.basicConfig(level=logging.DEBUG, format=' %(asctime)s - %(levelname)s - %(message)s')
 #to disable logging messages
 logging.disable(logging.ERROR)
 
-#to create all the lists that will be used later
-choicesForPurpose = ["books", "video games", "back", "1", "2", "3"]
-genreAccept = ["adventure", "fantasy", "romance", "thriller"]
-numbersAccept = ["1","2","3","4"]
-shoppingCart = {}
+def findNumAndInitials(emp):
+    '''
+    To only pull out the number portion from the staff id for easier sorting
 
-#to initialize the variables to enter the loops
-userChoice = ""
-# totalPay = Jobs.grabAccountM()
+    Parameters
+    ----------
+    emp: string
+        employeeId waiting to be deciphered
 
-loginStatus = False
-isEmployee = False
-uniqueStaffId = False
+    Return
+    ------
+    num: int
+        The number portion of the employeeId
+    initials: string
+        The initial portion of the employeeId
+    '''
+    num = ''
+    initials = ""
+    numbers = '0123456789'
+    for i in emp:
+        if i in numbers:
+            num += i
+        else:
+            initials += i
+    num = int(num) #converting types
+    return num, initials
 
-#Welcome message
-print("Welcome to the newly opened book store, Tundra!")
+def insertionSort(arr, secArr):
+   for i in range(1, len(arr)):
+      key = arr[i]
+      key2 = secArr[i]
+      # Move elements of arr[0..i-1], that are greater than key,
+      # to one position ahead of their current position
+      j = i-1
+      while j >=0 and key < arr[j] :
+         arr[j+1] = arr[j]
+         secArr[j+1] = secArr[j]
+         j -= 1
+      arr[j+1] = key
+      secArr[j+1] = key2
 
-# keeps the user in the library until they choose to leave
-while (userChoice != "leave") and (userChoice != "3"):
-    logging.info("The user is currently logged in: " + str(loginStatus))
-    # to reset this variable to re-enter the while loop
-    userPurpose = ""
-    # to check whether or not the user is logged in/signed up as a customer
-    if (loginStatus == True and isEmployee == False):
-        option = "(1) Browse Catalogue"
-        option1 = "\n(2) View Cart"
-        option2 = "\n(3) Sell Work"
-        optional = "\n(4) Log Out"
-        welcomeMessage = "\nWelcome " + Customer.getName(existCustomer) + "! "
-    # if the user is not logged in
-    elif (loginStatus == False):
-        option = "(1) Browse Catalogue"
-        option1 = "\n(2) Log In"
-        option2 = "\n(3) Leave"
-        optional = "\n(4) Apply For Job"
-        welcomeMessage = ""
-    # if the user is logged in as an employee
-    elif (loginStatus == True and isEmployee == True):
-        option = "(1) Work"
-        option1 = "\n(2) Collect Pay"
-        option2 = "\n(3) Promotion"
-        optional = "\n(4) Log Out"
-        welcomeMessage = "\nWelcome " + Employee.getName(existEmployee) + "! "
+def linearSearch(arr, item):
+    '''
+    To search for an item in a large list, one-by-one
 
-    print(welcomeMessage + "What would you like to do today?\n" + option + option1 + option2 + optional) # + "\n(5) Account Recovery"
-    #records the user's choice
-    userChoice = input().strip().lower()
-    # to see what the user typed in, may be the cause of potential errors
-    logging.info("The user typed in " + userChoice + " when asked what they would like to do.")
+    Parameters
+    ----------
+    arr: list[]
+        A large sorted array of items
+    item: any
+        The item to search for
 
-    #if the user chooses to browse or chose <back> in the next option
-    if (userChoice == "browse" or userChoice == "browse catalogue" or userChoice == "1") and (isEmployee == False):
-        # ensures that the user must enter appropriate responses to progress
-        while (userPurpose not in choicesForPurpose):
-            print("What would you like to browse for?\n(1) Books\n(2) Video Games \n(3) Back")
-            # records the user's answer
-            userPurpose = input().strip().lower()
-            # to see what the user typed in, may be the cause of potential errors
-            logging.info("The user typed in " + userPurpose + " when choosing what they wanted to browse for.")
-            #if the user types in a valid option
-            if (userPurpose == "books" or userPurpose == "1" or userPurpose == "video games" or userPurpose == "2"):
-                if userPurpose == "2" or userPurpose == "video games":
-                    userPurpose = "videoGames"
-                    pub = "\nPublisher: "
-                else:
-                    userPurpose = "books"
-                    pub = "\nAuthor: "
-                #asks for the type of genre they would like to explore
-                print("What genre would you like to explore? \n(1) Adventure\n(2) Fantasy\n(3) Romance\n(4) Thriller")
-                userCategory = input().strip().lower()
-                # if the user typed in a number
-                if userCategory in numbersAccept:
-                    #converts the type from string to integer
-                    userCategory = int(userCategory)
-                    #converts the number into the corresponding option - string
-                    userCategory = genreAccept[userCategory-1]
-                if (userCategory in genreAccept):
-                    #display the titles of the works and the price of the works
-                    listOfWorks = Works.convertWorks(userCategory, userPurpose)
-                    print("\nThe titles under this genre are:\n")
-                    for individualWork in listOfWorks:
-                        # printing the individual names of the titles
-                        print(individualWork)
-                    print("<back>\n")
-                    userOption = input().strip()
-                    # checks if the user input is valid or not
-                    logging.info(listOfWorks)
-                    if userOption in listOfWorks:
-                        # prints the additional information about this book
-                        print("Title: " + str(userOption) + str(pub) + str(listOfWorks[userOption][0]) + "\nSynopsis: " + str(listOfWorks[userOption][1]) + "\nPrice: $" + str(listOfWorks[userOption][2]))
-                        userInput = input("(Press 'Enter' to continue)")
-                        #prompts the user to buy it or go back only if they are logged in
-                        if  loginStatus == True and userInput == "":
-                            purchase = input("Would you like to purchase it (y/n)? ")
-                            if purchase == "y":
-                                #Adds the title of the work along with its price into the user's shopping cart
-                                shoppingCart[userOption] = listOfWorks[userOption][2]
-                                print("Added to your shopping cart successfully.")
-                            else:
-                                print(str(userOption) + " was not added to cart.")
-                    
-                        else:
-                            print("\nSign up to purchase books/games from Tundra.\n")
-
-                else:
-                    print("\nPlease choose from the options provided.\n")
-
-            #if the user chose none of the options provided
-            elif userPurpose not in choicesForPurpose:
-                #repeat until they choose one of the options
-                print("\nPlease enter a valid option.\n")
+    Return
+    ------
+    i: int
+        indicator of where the item is in the list
+    '''
+    for i in range(0, len(arr)):
+        if item == arr[i]:
+            return i
     
-    #if the user chooses to login
-    elif (loginStatus == False and (userChoice == "log in" or userChoice == "2")):
-        logIn = input("Are you: \n(1) Employee\n(2) Customer\n").lower()
+    return -10 #not in list
 
-        #if user chose the employee option
-        if logIn == "employee" or logIn == "1":
-            #collecting the information
-            fName = input("First name: ")
-            lName = input("Last name: ")
-            email = input("Email: ")
-            pwd = input("Password: ")
-            empId = input("EmployeeID: ")
+def binarySearch(arr, item):
+    '''
+    To search for an item in a large sorted list, using the binary method
 
-            existEmployee = Employee(email, fName, lName, pwd, empId)
-            
-            #checking if employeeId is in database
-            employeeExistence = existEmployee.checkExistence()
-            #if employeeId is in database
-            if employeeExistence == True:
-                loginStatus = True
-                isEmployee = True
+    Parameters
+    ----------
+    arr: list[]
+        A large sorted list containing several items
+    item: any
+        The item to search for
+    
+    Return
+    ------
+    i: int
+        indicator of where the item is in the list
+    '''
+    min = 0
+    max = len(arr)
 
-                # finding the job and experience they have
-                job = Jobs.findJob(empId)
-                jobTitle = job[1]
-                exp = job[2]
-                amount = job[3]
-                # creating the currentJob object under the Jobs class
-                currentJob = Jobs(jobTitle, empId, exp, amount)
-            else:
-                print("Sorry, the staff ID provided is not found.")
-        elif logIn == "customer" or logIn == "2":
-            needSignUp = input("Do you already have an account (y/n)? ")
-            #if user types in one of the provided options
-            if needSignUp == "n" or needSignUp == "y":
-                # registering the user
-                newUserEmail = input("Email: ")
-                newUsername = input("Username: ")
-                newUserPassword = input("Password: ")
+    while max >= 1: #or min <= len(arr)
+        mid = (min + max)//2
+        if arr[mid] < item:
+            min = mid + 1
+        elif arr[mid] > item:
+            max = mid - 1
+        else: # if arr[mid] == item
+            return mid
+    
+    return -10 # not in list
 
-                if newUserEmail != "" or newUsername != "" or newUserPassword != "" or "@" not in newUserEmail:
-                    # generates the customer data
-                    existCustomer = Customer(newUserEmail, newUsername, newUserPassword)
-                    if needSignUp == "n":
-                        # stores the customer data
-                        Customer.addCustomer(existCustomer)
-                        loginStatus = True
-                    else:
-                        existence = Customer.checkExistence(existCustomer)
-                        if existence == True:
-                            # change their login status to true
-                            loginStatus = True
-                        else:
-                            print("\nAccount does not exist.\n")
-                
-                # if the user inputs invalid information
-                else:
-                    print("\nInvalid information.\n")
+def findEmployee(fName, lName):
+        '''
+        To find staffId based on name provided
 
-    # if the user chooses to view their cart
-    elif (loginStatus == True and (userChoice == "view" or userChoice == "view cart" or userChoice == "2") and (isEmployee == False)):
-        # prints the 'receipt' including the name of the books/video games and the price, also the total cost of everything combined
-        print("\nYour Shopping Cart:\n")
-        # to reset the total price each time
-        totalPrice = 0.00
-        # to loop through the shopping cart
-        for item in shoppingCart:
-            #prints the name of the work and its corresponding price
-            print(str(item) + " - $" + str(shoppingCart[item]))
-            # adds up the total from the shopping cart
-            totalPrice = round(totalPrice + float(shoppingCart[item]), 2)
-        print("-----------------------------------\nTax: " + str(round(totalPrice*0.13, 2)) + "\nTotal: "+ str(totalPrice) +"\nYour total after tax is: $" + str(round(totalPrice*1.13,2)) + " after tax")
-        confirmation = input("Are you ready to check out (y/n)?" )
-        if confirmation == "y":
-            # can now exit the loop
-            print("Thank you for your purchase.")
-            loginStatus = False
-            userChoice = "leave"
+        Parameters
+        ----------
+        fName: string
+            first name of employee
+        lname: string
+            last name of employee
 
-    # if the user chooses to sell their work
-    elif (loginStatus == True and (userChoice == "sell" or userChoice == "sell work" or userChoice == "3") and (isEmployee == False)):
-        # prompts the user to type in the genre of the work
-        genreOfWork = input("What genre is the work you are selling? We are only accepting the following genres: \n(1) Adventure\n(2) Fantasy\n(3) Romance\n(4) Thriller\n").strip().lower()
-        typeOfWork = input("What type of work is this? \n(1) Books\n(2) Video Games\n").strip().lower()
-        # checking if the user's responses are reasonable
-        if ((genreOfWork in genreAccept or genreOfWork in numbersAccept) and (typeOfWork == "books" or typeOfWork == "video games" or typeOfWork == "1" or typeOfWork == "2")):
-            titleOfWork = input("Title: ")
-            authorOfWork = input("Author: ")
-            synopsisOfWork = input("Quick Summary: ")
-            # initial value to enter the while loop
-            priceOfWork = 200.00
-            # checking what the user typed in
-            if (typeOfWork == "video games" or typeOfWork == "2"):
-                workType = "videoGames"
-            else:
-                workType = "books"
+        Return
+        ------
+        information: list[] or int
+            A list containing the first name, last name, and staff id
+        '''
+        information = 0
+        # opens the text file and returns the information as an array
+        with open('library/employeeList.txt', 'r+') as readArray:
+            content = readArray.readlines()
+            for i in range(0, len(content)):
+                # check if staff id is in the current line being checked
+                if (fName in content[i]) and (lName in content[i]):
+                    information = content[i]
+                    information = ast.literal_eval(information)
 
-            if genreOfWork in numbersAccept:
-                genreOfWork = genreAccept[int(genreOfWork)-1]
-            # "traps" the user until they enter an appropriate price
-            while (priceOfWork > 100.00 or priceOfWork < 0.00):
-                try:
-                    priceOfWork = float(input("Ideal price for selling (within $100.00): "))
-                except:
-                    print("Invalid input, please input a number")
-                    priceOfWork = 200.00
-                else:
-                    # to convert from string to float
-                    priceOfWork = float(priceOfWork)
-                    #Ensures the user inputs an appropriate price before adding to database/file
-                    if (priceOfWork < 100.00 and priceOfWork > 0.00):
-                        # the new price, as Tundra is a book store; this is the fee for selling their works
-                        priceOfWork += 2.50
-                        # generating an object through the use of the class
-                        work1 = Works(genreOfWork, titleOfWork, authorOfWork, priceOfWork, synopsisOfWork, workType)
-                        work1.addWork()
-                        #returns to original price - in case the adjusted price goes beyond 100.00
-                        priceOfWork -= 2.50
-                        # to ensure the user stays in the bigger loop, does not exit the first loop
-                        userChoice = ""
-                    else:
-                        print("Please enter an appropriate price, within $100.00.")
-                        # to run the while loop again
-                        priceOfWork = 200.00
+        return information
 
-        # if the user did not follow the instructions - kick them out
-        else:
-            print("Sorry, unfortunately, Tundra is unable to accept your product.")
+def addEmployee(info, file):
+    '''
+    Adds the user to the database/file if not already stored
+    '''
+    #adds the employee to the database/file if the email is not already in database/file
+    with open(file, 'r+') as readArray:
+        content = readArray.readlines()
+        if info not in content:
+            # adds the customer information into the file/database
+            readArray.write(str(info) + "\n")
 
-    # if the user is prepared to leave the store
-    elif (loginStatus == False and (userChoice == "leave" or userChoice == "3")):
-        # to exit the loop
-        userChoice = "leave"
+    return
 
-    #if the user wants to log out
-    elif (loginStatus == True and (userChoice == "log out" or userChoice == "4")):
-        loginStatus = False
+def clear():
+    '''
+    Clear the textfiles
+    '''
+    with open('library/employeeList.txt', 'w') as remove:
+        remove.writelines('')
+        remove.close()
 
-    # if the user wants to apply to become a part of Tundra's staff
-    elif (loginStatus == False and (userChoice == "apply" or userChoice == "apply for job" or userChoice == "4")):
-        # pop up screen for applying to be an employee
-        # records information on the applicant
-        fName = input("First name: ")
-        lName = input("Last name: ")
-        email = input("Email: ")
-        pwd = input("Password: ")
+    with open ('library/sortedEmpList.txt', 'w') as remove2:
+        remove2.writelines('')
+        remove2.close()
 
-        if fName == "" or lName == "" or email == "" or pwd == "" or "@" not in email:
-            print("\nInvalid information.\n")
+listOfEmpId = []
+listOfId = []
+listOfInitials = []
 
-        else:
-            #place all the information gathered into the Employee class to generate an object
-            existEmployee = Employee(email, fName, lName, pwd, "noSTAFFid")
+userFirst = ""
+userLast = ""
 
-            #checking for no duplicate applicants
-            alreadyApplied = existEmployee.checkExistence()
+for i in range(10):
+    name = names.get_full_name().split(" ") #generate name
+    fName = name[0] # first name
+    lName = name[1] # last name
 
-            # if have not applied before
-            if alreadyApplied == False:
-                employeeId = existEmployee.getStaffId() # stores the generated employee id
+    employee = Employee(fName, lName) #create object
+    employee.addEmployee() #add employee into textfile if not already exist
 
-                #changing user status
-                isEmployee = True
-                loginStatus = True 
+    listOfEmpId.append(employee.staffId)
 
-                # add employee to database
-                Employee.addEmployee(existEmployee)
-                # assign them their job - cashier
-                currentJob = Jobs("cashier", employeeId, 0, 0.00)
-                currentJob.addJob()
+for a in listOfEmpId:
+    entireId = findNumAndInitials(a)
 
-                print("\nWelcome " + fName + "!\nRemember your employee ID!\n\nYour employee ID is: \033[1m" + employeeId + "\033[0m")
-            
-            else:
-                print("\nYou have already applied.\n")
+    id = entireId[0] #the basis of sorting
+    listOfId.append(id)
+    ini = entireId[1]
+    listOfInitials.append(ini)
 
-    elif (isEmployee == True and (userChoice == "work" or userChoice == "1")):
-        # should pop up an option to work
+copyOfId = listOfId.copy()
 
-        workInput = input("Your shift is 8 hours long. \nBegin working by pressing 'Enter'")
-        pay = currentJob.beginWorking() # run the working minigame (math) and return total pay for the work session
+# INSERTION SORT
+startIns = time.time()
+insertionSort(listOfId, listOfInitials) #sort both lists in terms of the number portion of the empID
+endIns = time.time()
 
-    elif (isEmployee == True and (userChoice == "collect pay" or userChoice == "collect" or userChoice =="2")):
-        # should pop up a screen showing the amount in account, and whether or not to collect it
-        moneyChoice = input("You currently have $" + str(currentJob.findMoney()) + " in your account.\nWould you like to take it out now (y/n)? ")
-        if moneyChoice == "y":
-            # after collecting their pay; resets back to $0
-            currentJob.clearZero()
+logging.info("Insertion sort took: " + str(round((endIns-startIns)*10**3, 15)) + "ms")
+logging.info(listOfEmpId)
 
-    elif (isEmployee == True and (userChoice == "promotion" or userChoice == "3")):
-        # calling the promote function; checks if the employee can promote or not
-        jobNow = currentJob.promote()
+# BULIT-IN SORT
+startBI = time.time()
+listOfEmpId.sort()
+endBI = time.time()
+logging.info(listOfEmpId)
+logging.info("Built-in sort took: " + str(round((endBI-startBI)*10**3, 15)) + "ms")
 
-        print("\nYour current job is: " + str(jobNow[0]) + "\nYour current pay is: $" + str(jobNow[1]) + "/hr")
-        userChoice = "stay" #keeps the user in while loop
+# Put the staffId together once more
+for name in range(0, len(listOfId)):
+    staffId = str(listOfId[name]) + str(listOfInitials[name])
+    employeeInfo = Employee.findEmployee(staffId)
+    addEmployee(employeeInfo, 'library/sortedEmpList.txt')
 
-    #if the user did not choose a valid option
+while userFirst == "" or userLast == "":
+    print("\nWho would you like to search for? ")
+    userFirst = input("First Name: ")
+    userLast = input("Last Name: ")
+
+empInfo = findEmployee(userFirst, userLast)
+if empInfo != 0: # as long as the employee id does not equal 0 = DNE
+    empFullId = findNumAndInitials(empInfo[-1])
+    empId = empFullId[0]
+
+    # LINEAR SEARCH - BEFORE SORTING
+    startC = time.time()
+    positionC = linearSearch(copyOfId, empId)
+    endC = time.time()
+
+    # LINEAR SEARCH
+    startL = time.time()
+    positionL = linearSearch(listOfId, empId)
+    endL = time.time()
+
+    # BINARY SEARCH
+    startB = time.time()
+    positionB = binarySearch(listOfId, empId)
+    endB = time.time()
+
+    if positionL != -10:
+        lineStatusL = "at line " + str(positionL + 1)
     else:
-        print("\nPlease input a valid option.\n")
+        lineStatusL = "not"
+    if positionB != -10:
+        lineStatusB = "at line " + str(positionB + 1)
+    else:
+        lineStatusB = "not"
+    if positionC != -10:
+        lineStatusC = "at line " + str(positionC + 1)
+    else:
+        lineStatusC = "not"
 
-print("\nPlease come again!")
+    logging.info(str(userFirst) + " " + str(userLast) + " is " + str(lineStatusL) + " in the ordered list of employees.\n\nTime: " + str(round((endL - startL)*10**3, 15)) + "ms\n")
+    logging.info(str(userFirst) + " " + str(userLast) + " is " + str(lineStatusB) + " in the ordered list of employees.\n\nTime: " + str(round((endB - startB)*10**200, 15)) + "ms\n")
+    logging.info(str(userFirst) + " " + str(userLast) + " is " + str(lineStatusC) + " in the list of employees.\n\nTime: " + str(round((endC - startC)*10**3, 15)) + "ms\n")
+else: #if could not find the employee being demanded for
+    print("This employee does not work at Tundra.")
+
+# CLEAR DATA
+clear()

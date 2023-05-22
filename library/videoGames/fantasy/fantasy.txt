@@ -1,2 +1,0 @@
-['fantasy', 'Elden Ring', 'Bandai Namco', '79.99', 'Rise, Tarnished, and be guided by grace to brandish the power of the Elden Ring and become an Elden Lord in the Lands Between.']
-['fantasy', 'The Legend of Zelda: Breath of the Wild', 'Nintendo', '79.99', 'Step into a world of discovery, exploration, and adventure in The Legend of Zelda: Breath of the Wild, a boundary-breaking new game in the acclaimed series. Travel across vast fields, through forests, and to mountain peaks as you discover what has become of the kingdom of Hyrule in this stunning Open-Air Adventure.']

@@ -1,2 +1,0 @@
-['johndoe@gmail.com', 'JohnDoe01', 'helloIamJohnDoe']
-['snows@gmail.com', 'Snows01', 'snowsaccount']

@@ -1,24 +1,17 @@
 import random
-from library.person import User
-# from customer import Customer
+import ast
 
-class Employee(User):
+class Employee():
     '''
     A class that holds the employee objects
 
     Attibutes
     ---------
-    email: string
-            The email of the employee
-
     name: string
         The first name of the employee
 
     lName: string
         The last name of the employee
-
-    password: string
-        The stored password of the employee
 
     staffId: string
         The staff identification
@@ -37,51 +30,38 @@ class Employee(User):
         Returns the id of employee
     '''
 
-    def __init__(self, email, name, lName, password, staffId):
+    def __init__(self, name, lName):
         '''
         Constructor to build this object
 
         Parameters
-        ----------     
-        email: string
-            The email of the employee
-
+        ----------    
         name: string
             The first name of the employee
         
         lName: string
             The last name of the employee
-
-        password: string
-            The stored password of the employee
         
         staffId: string
             The staff identification
 
         ''' 
-        super().__init__(email, name, password)
+        self.name = name
         self.lName = lName
-        if staffId == "noSTAFFid":
-            self.staffId = Employee.generateStaffId(self)
-        else:
-            self.staffId = staffId
+        self.staffId = Employee.generateStaffId(self)
 
     def addEmployee(self):
         '''
         Adds the user to the database/file if their email is not already stored
         '''
-        EmployeeInfo = [self.email, self.name, self.lName, self.password, self.staffId]
-        EmployeeBackup = [self.email, self.name, self.lName]
+        EmployeeInfo = [self.name, self.lName, self.staffId]
 
         #adds the employee to the database/file if the email is not already in database/file
         with open('library/employeeList.txt', 'r+') as readArray:
             content = readArray.readlines()
-            # if the email is not already used
-            if self.email not in content:
+            if EmployeeInfo not in content:
                 # adds the customer information into the file/database
                 readArray.write(str(EmployeeInfo) + "\n")
-                #to check for its existence later
-                readArray.write(str(EmployeeBackup) + "\n")
         return
     
     def getName(self) -> str:
@@ -91,7 +71,7 @@ class Employee(User):
         -------
         The first name of the employee
         '''
-        return super().getName()
+        return self.name
     
     def checkExistence(self) -> str:
         '''
@@ -102,18 +82,27 @@ class Employee(User):
         existence: boolean
             Returns true or false
         '''
-        employeeInfo = [self.email, self.name, self.lName]
+        employeeInfo = [self.name, self.lName]
         file = 'library/employeeList.txt'
 
-        return super().checkExistence(employeeInfo, file)
-    
+        existence = False
+        with open(file, 'r+') as readArray:
+            content = readArray.readlines()
+            for i in range(0, len(content)):
+                # check if current info already exists or not
+                if (str(employeeInfo)) in content[i]:
+                    existence = True
+                    return existence
+
+        return existence
+
     def generateStaffId(self) -> str:
         '''
         Randomly generates an unique string to new employees
 
 
         '''
-        jumboNum = random.randrange(1000,9999) #generates a random 4 digit number
+        jumboNum = random.randrange(100000,999999) #generates a random 6 digit number
 
         # retrieving the first letter of both first and last name
         FFname = self.name[0]
@@ -141,3 +130,28 @@ class Employee(User):
         The id of the employee
         '''
         return self.staffId
+    
+    def findEmployee(staffId):
+        '''
+        To find information such as the first name and last name of the employee based on the staffId provided
+
+        Parameters
+        ----------
+        staffId: string
+            The identification of the employee
+            
+        Return
+        ------
+        information: list[]
+            A list containing the first name, last name, and staff id
+        '''
+        # opens the text file and returns the information as an array
+        with open('library/employeeList.txt', 'r+') as readArray:
+            content = readArray.readlines()
+            for i in range(0, len(content)):
+                # check if staff id is in the current line being checked
+                if (staffId) in content[i]:
+                    information = content[i]
+                    information = ast.literal_eval(information)
+
+        return information
