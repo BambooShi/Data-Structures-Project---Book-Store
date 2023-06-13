@@ -47,6 +47,17 @@ def findNumAndInitials(emp):
     return num, initials
 
 def insertionSort(arr, secArr):
+   '''
+    Sorts the first array and orders the second array based on the first array.
+
+    Parameters
+    ----------
+    arr: list[]
+        A list of items; the one to be sorted
+    secArr: list[]
+        A list of items; the one ordered based on 'arr'
+    
+   '''
    for i in range(1, len(arr)):
       key = arr[i]
       key2 = secArr[i]
