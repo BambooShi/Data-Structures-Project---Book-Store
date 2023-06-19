@@ -5,7 +5,7 @@
 #
 # Author:      Snow S.
 # Created:     11-May-2023
-# Updated:     18-May-2023
+# Updated:     18-June-2023
 #------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 # Import the class created + logging, ast, time, names
 import ast
@@ -176,6 +176,19 @@ def clear():
         remove2.writelines('')
         remove2.close()
 
+def addData(txt, data):
+    '''
+    Add data to file
+
+    Parameters
+    ----------
+    txt: string
+        name of the textfile
+    data: information to add
+    '''
+    with open(txt,'a') as datas:
+        datas.write(str(data) + "\n")
+
 listOfEmpId = []
 listOfId = []
 listOfInitials = []
@@ -183,7 +196,7 @@ listOfInitials = []
 userFirst = ""
 userLast = ""
 
-for i in range(10):
+for i in range(75000):
     name = names.get_full_name().split(" ") #generate name
     fName = name[0] # first name
     lName = name[1] # last name
@@ -204,19 +217,21 @@ for a in listOfEmpId:
 copyOfId = listOfId.copy()
 
 # INSERTION SORT
-startIns = time.time()
+startIns = time.perf_counter()
 insertionSort(listOfId, listOfInitials) #sort both lists in terms of the number portion of the empID
-endIns = time.time()
+endIns = time.perf_counter()
 
 logging.info("Insertion sort took: " + str(round((endIns-startIns)*10**3, 15)) + "ms")
 logging.info(listOfEmpId)
+addData('library/insertionData.txt', round((endIns-startIns)*10**3, 15))
 
 # BULIT-IN SORT
-startBI = time.time()
+startBI = time.perf_counter()
 listOfEmpId.sort()
-endBI = time.time()
+endBI = time.perf_counter()
 logging.info(listOfEmpId)
 logging.info("Built-in sort took: " + str(round((endBI-startBI)*10**3, 15)) + "ms")
+addData('library/builtData.txt', round((endBI-startBI)*10**3, 15))
 
 # Put the staffId together once more
 for name in range(0, len(listOfId)):
@@ -224,49 +239,58 @@ for name in range(0, len(listOfId)):
     employeeInfo = Employee.findEmployee(staffId)
     addEmployee(employeeInfo, 'library/sortedEmpList.txt')
 
-while userFirst == "" or userLast == "":
+for i in range(0,10):
     print("\nWho would you like to search for? ")
     userFirst = input("First Name: ")
     userLast = input("Last Name: ")
 
-empInfo = findEmployee(userFirst, userLast)
-if empInfo != 0: # as long as the employee id does not equal 0 = DNE
-    empFullId = findNumAndInitials(empInfo[-1])
-    empId = empFullId[0]
+    #Determining whether or not the user exists
+    startF = time.perf_counter()
+    empInfo = findEmployee(userFirst, userLast)
+    endF = time.perf_counter()
 
-    # LINEAR SEARCH - BEFORE SORTING
-    startC = time.time()
-    positionC = linearSearch(copyOfId, empId)
-    endC = time.time()
+    addData('library/DNE.txt', round((endF - startF)*10**3, 15))
+    if empInfo != 0: # as long as the employee id does not equal 0 = DNE
+        empFullId = findNumAndInitials(empInfo[-1])
+        empId = empFullId[0]
 
-    # LINEAR SEARCH
-    startL = time.time()
-    positionL = linearSearch(listOfId, empId)
-    endL = time.time()
+        # LINEAR SEARCH - BEFORE SORTING
+        startC = time.perf_counter()
+        positionC = linearSearch(copyOfId, empId)
+        endC = time.perf_counter()
 
-    # BINARY SEARCH
-    startB = time.time()
-    positionB = binarySearch(listOfId, empId)
-    endB = time.time()
+        # LINEAR SEARCH
+        startL = time.perf_counter()
+        positionL = linearSearch(listOfId, empId)
+        endL = time.perf_counter()
 
-    if positionL != -10:
-        lineStatusL = "at line " + str(positionL + 1)
-    else:
-        lineStatusL = "not"
-    if positionB != -10:
-        lineStatusB = "at line " + str(positionB + 1)
-    else:
-        lineStatusB = "not"
-    if positionC != -10:
-        lineStatusC = "at line " + str(positionC + 1)
-    else:
-        lineStatusC = "not"
+        # BINARY SEARCH
+        startB = time.perf_counter()
+        positionB = binarySearch(listOfId, empId)
+        endB = time.perf_counter()
 
-    logging.info(str(userFirst) + " " + str(userLast) + " is " + str(lineStatusL) + " in the ordered list of employees.\n\nTime: " + str(round((endL - startL)*10**3, 15)) + "ms\n")
-    logging.info(str(userFirst) + " " + str(userLast) + " is " + str(lineStatusB) + " in the ordered list of employees.\n\nTime: " + str(round((endB - startB)*10**200, 15)) + "ms\n")
-    logging.info(str(userFirst) + " " + str(userLast) + " is " + str(lineStatusC) + " in the list of employees.\n\nTime: " + str(round((endC - startC)*10**3, 15)) + "ms\n")
-else: #if could not find the employee being demanded for
-    print("This employee does not work at Tundra.")
+        if positionL != -10:
+            lineStatusL = "at line " + str(positionL + 1)
+        else:
+            lineStatusL = "not"
+        if positionB != -10:
+            lineStatusB = "at line " + str(positionB + 1)
+        else:
+            lineStatusB = "not"
+        if positionC != -10:
+            lineStatusC = "at line " + str(positionC + 1)
+        else:
+            lineStatusC = "not"
+
+        print(str(userFirst) + " " + str(userLast) + " is " + str(lineStatusL) + " in the ordered list of employees.")
+        print(str(userFirst) + " " + str(userLast) + " is " + str(lineStatusB) + " in the ordered list of employees.")
+        print(str(userFirst) + " " + str(userLast) + " is " + str(lineStatusC) + " in the list of employees.")
+        
+        addData('library/linear2Data.txt', round((endL-startL)*10**3, 15))
+        addData('library/binaryData.txt', round((endB-startB)*10**3, 15))
+        addData('library/linear1Data.txt', round((endC - startC)*10**3, 15))
+    else: #if could not find the employee being demanded for
+        print("This employee does not work at Tundra.")
 
 # CLEAR DATA
 clear()
